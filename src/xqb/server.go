@@ -39,8 +39,8 @@ func (this *SearchRedisHandle) Init(db int) error {
 	this.Lock()
 	defer this.Unlock()
 
-	dictPath := path.Join(jiebaXmlConfig.DictPath, fmt.Sprintf("%d", jiebaXmlConfig.DB))
-	dictListPath := []string{
+	dictPath := path.Join(jiebaXmlConfig.DictPath, fmt.Sprintf("%d", db))
+	dictPaths := []string{
 		fmt.Sprintf("%s/jieba.dict.utf8", dictPath),
 		fmt.Sprintf("%s/hmm_model.utf8", dictPath),
 		fmt.Sprintf("%s/user.dict.utf8", dictPath),
@@ -48,7 +48,8 @@ func (this *SearchRedisHandle) Init(db int) error {
 		fmt.Sprintf("%s/stop_words.utf8", dictPath),
 	}
 
-	for _, p := range dictListPath {
+	for _, p := range dictPaths {
+		redis.Logger.Print(p)
 		r, e := os.Stat(p)
 		if e != nil || r.Size() == 0 {
 			return errors.New(fmt.Sprintf("not found dict file `%s`", p))
@@ -59,7 +60,7 @@ func (this *SearchRedisHandle) Init(db int) error {
 		this.jieba = make(map[int]*gojieba.Jieba, 0)
 	}
 
-	this.jieba[db] = gojieba.NewJieba(dictListPath[0], dictListPath[1], dictListPath[2], dictListPath[3], dictListPath[4])
+	this.jieba[db] = gojieba.NewJieba(dictPaths[0], dictPaths[1], dictPaths[2], dictPaths[3], dictPaths[4])
 
 	return nil
 }
@@ -121,6 +122,14 @@ func (this *SearchRedisHandle) Tag(client *redis.Client, words string) ([]string
 	}
 
 	return this.jieba[client.DB].Tag(words), nil
+}
+
+func (this *SearchRedisHandle) Extract(client *redis.Client, words string, limit int) ([]string, error) {
+	if len(words) == 0 {
+		return nil, ERRPARAMS
+	}
+
+	return this.jieba[client.DB].Extract(words, limit), nil
 }
 
 func (this *SearchRedisHandle) AddWord(client *redis.Client, word string) (string, error) {

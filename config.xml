@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <address>0.0.0.0:6379</address>
+    <db>0</db>
+    <dict>/Users/xingqiba/data/softs/phpjieba/cjieba/dict</dict>
+</config>

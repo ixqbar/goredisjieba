@@ -39,6 +39,12 @@ func (this *SearchRedisHandle) Init(db int) error {
 	this.Lock()
 	defer this.Unlock()
 
+	if this.jieba != nil {
+		if _, ok := this.jieba[db]; ok {
+			return nil
+		}
+	}
+
 	dictPath := path.Join(jiebaXmlConfig.DictPath, fmt.Sprintf("%d", db))
 	dictPaths := []string{
 		fmt.Sprintf("%s/jieba.dict.utf8", dictPath),

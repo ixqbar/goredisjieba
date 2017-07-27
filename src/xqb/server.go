@@ -39,10 +39,8 @@ func (this *SearchRedisHandle) Init(db int) error {
 	this.Lock()
 	defer this.Unlock()
 
-	if this.jieba != nil {
-		if _, ok := this.jieba[db]; ok {
-			return nil
-		}
+	if _, ok := this.jieba[db]; ok {
+		return nil
 	}
 
 	dictPath := path.Join(jiebaXmlConfig.DictPath, fmt.Sprintf("%d", db))
@@ -60,10 +58,6 @@ func (this *SearchRedisHandle) Init(db int) error {
 		if e != nil || r.Size() == 0 {
 			return errors.New(fmt.Sprintf("not found dict file `%s`", p))
 		}
-	}
-
-	if this.jieba == nil {
-		this.jieba = make(map[int]*gojieba.Jieba, 0)
 	}
 
 	this.jieba[db] = gojieba.NewJieba(dictPaths[0], dictPaths[1], dictPaths[2], dictPaths[3], dictPaths[4])
@@ -150,7 +144,7 @@ func (this *SearchRedisHandle) AddWord(client *redis.Client, word string) (strin
 
 func Run() {
 	searcher := &SearchRedisHandle{
-		jieba: nil,
+		jieba: make(map[int]*gojieba.Jieba, 0),
 	}
 
 	searcher.SetShield("Init")

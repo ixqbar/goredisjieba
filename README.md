@@ -13,7 +13,7 @@
 
 ### usage
 ```
-make
+make linux
 
 ./bin/goRedisJieba_linux --config=config.xml
 ```

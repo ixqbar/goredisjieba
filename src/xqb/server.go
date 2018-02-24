@@ -81,6 +81,14 @@ func (obj *SearchRedisHandle) Version() (string, error) {
 	return VERSION, nil
 }
 
+func (obj *SearchRedisHandle) Ping(content string) (string, error)  {
+	if len(content) > 0 {
+		return content, nil
+	}
+
+	return "PONG", nil
+}
+
 func (obj *SearchRedisHandle) Select(client *redis.Client, db int) (string, error) {
 	err := obj.Init(db)
 	if err != nil {

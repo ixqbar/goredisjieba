@@ -3,7 +3,7 @@ package xqb
 import (
 	"errors"
 	"fmt"
-	redis "github.com/jonnywang/go-kits/redis"
+	"github.com/jonnywang/go-kits/redis"
 	"github.com/yanyiwu/gojieba"
 	"os"
 	"os/signal"
@@ -35,11 +35,11 @@ func toBool(p int) bool {
 	return true
 }
 
-func (this *SearchRedisHandle) Init(db int) error {
-	this.Lock()
-	defer this.Unlock()
+func (obj *SearchRedisHandle) Init(db int) error {
+	obj.Lock()
+	defer obj.Unlock()
 
-	if _, ok := this.jieba[db]; ok {
+	if _, ok := obj.jieba[db]; ok {
 		return nil
 	}
 
@@ -60,16 +60,16 @@ func (this *SearchRedisHandle) Init(db int) error {
 		}
 	}
 
-	this.jieba[db] = gojieba.NewJieba(dictPaths[0], dictPaths[1], dictPaths[2], dictPaths[3], dictPaths[4])
+	obj.jieba[db] = gojieba.NewJieba(dictPaths[0], dictPaths[1], dictPaths[2], dictPaths[3], dictPaths[4])
 
 	return nil
 }
 
-func (this *SearchRedisHandle) Shutdown() error {
+func (obj *SearchRedisHandle) Shutdown() error {
 	redis.Logger.Print("searcher server will shutdown!!!")
 
-	if this.jieba != nil {
-		for _, j := range this.jieba {
+	if obj.jieba != nil {
+		for _, j := range obj.jieba {
 			j.Free()
 		}
 	}
@@ -77,12 +77,12 @@ func (this *SearchRedisHandle) Shutdown() error {
 	return nil
 }
 
-func (this *SearchRedisHandle) Version() (string, error) {
+func (obj *SearchRedisHandle) Version() (string, error) {
 	return VERSION, nil
 }
 
-func (this *SearchRedisHandle) Select(client *redis.Client, db int) (string, error) {
-	err := this.Init(db)
+func (obj *SearchRedisHandle) Select(client *redis.Client, db int) (string, error) {
+	err := obj.Init(db)
 	if err != nil {
 		return "", err
 	}
@@ -92,52 +92,52 @@ func (this *SearchRedisHandle) Select(client *redis.Client, db int) (string, err
 	return OK, nil
 }
 
-func (this *SearchRedisHandle) CutAll(client *redis.Client, words string) ([]string, error) {
+func (obj *SearchRedisHandle) CutAll(client *redis.Client, words string) ([]string, error) {
 	if len(words) == 0 {
 		return nil, ERRPARAMS
 	}
 
-	return this.jieba[client.DB].CutAll(words), nil
+	return obj.jieba[client.DB].CutAll(words), nil
 }
 
-func (this *SearchRedisHandle) Cut(client *redis.Client, words string, useHmm int) ([]string, error) {
+func (obj *SearchRedisHandle) Cut(client *redis.Client, words string, useHmm int) ([]string, error) {
 	if len(words) == 0 {
 		return nil, ERRPARAMS
 	}
 
-	return this.jieba[client.DB].Cut(words, toBool(useHmm)), nil
+	return obj.jieba[client.DB].Cut(words, toBool(useHmm)), nil
 }
 
-func (this *SearchRedisHandle) CutForSearch(client *redis.Client, words string, useHmm int) ([]string, error) {
+func (obj *SearchRedisHandle) CutForSearch(client *redis.Client, words string, useHmm int) ([]string, error) {
 	if len(words) == 0 {
 		return nil, ERRPARAMS
 	}
 
-	return this.jieba[client.DB].CutForSearch(words, toBool(useHmm)), nil
+	return obj.jieba[client.DB].CutForSearch(words, toBool(useHmm)), nil
 }
 
-func (this *SearchRedisHandle) Tag(client *redis.Client, words string) ([]string, error) {
+func (obj *SearchRedisHandle) Tag(client *redis.Client, words string) ([]string, error) {
 	if len(words) == 0 {
 		return nil, ERRPARAMS
 	}
 
-	return this.jieba[client.DB].Tag(words), nil
+	return obj.jieba[client.DB].Tag(words), nil
 }
 
-func (this *SearchRedisHandle) Extract(client *redis.Client, words string, limit int) ([]string, error) {
+func (obj *SearchRedisHandle) Extract(client *redis.Client, words string, limit int) ([]string, error) {
 	if len(words) == 0 {
 		return nil, ERRPARAMS
 	}
 
-	return this.jieba[client.DB].Extract(words, limit), nil
+	return obj.jieba[client.DB].Extract(words, limit), nil
 }
 
-func (this *SearchRedisHandle) AddWord(client *redis.Client, word string) (string, error) {
+func (obj *SearchRedisHandle) AddWord(client *redis.Client, word string) (string, error) {
 	if len(word) == 0 {
 		return "", ERRPARAMS
 	}
 
-	this.jieba[client.DB].AddWord(word)
+	obj.jieba[client.DB].AddWord(word)
 
 	return OK, nil
 }
@@ -147,13 +147,7 @@ func Run() {
 		jieba: make(map[int]*gojieba.Jieba, 0),
 	}
 
-	searcher.SetShield("Init")
-	searcher.SetShield("Shutdown")
-	searcher.SetShield("Lock")
-	searcher.SetShield("Unlock")
-	searcher.SetShield("SetShield")
-	searcher.SetShield("SetConfig")
-	searcher.SetShield("CheckShield")
+	searcher.Initiation()
 
 	err := searcher.Init(jiebaXmlConfig.DB)
 	if err != nil {

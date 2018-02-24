@@ -1,40 +1,40 @@
 package xqb
 
 import (
-	"errors"
-	"os"
 	"encoding/xml"
+	"errors"
 	"fmt"
+	"os"
 )
 
 type JiebaXmlConfig struct {
-	Address string `xml:"address"`
-	DB int `xml:"db"`
+	Address  string `xml:"address"`
+	DB       int    `xml:"db"`
 	DictPath string `xml:"dict"`
 }
 
 var jiebaXmlConfig *JiebaXmlConfig
 
-func ParseXmlConfig(path string) (*JiebaXmlConfig, error) {
-	if len(path) == 0 {
+func ParseXmlConfig(xmlPath string) (*JiebaXmlConfig, error) {
+	if len(xmlPath) == 0 {
 		return nil, errors.New("not found configure xml file")
 	}
 
-	r,e := os.Stat(path);
-	if  e !=nil || r.Size() == 0 {
+	r, e := os.Stat(xmlPath)
+	if e != nil || r.Size() == 0 {
 		return nil, errors.New("not found configure xml file")
 	}
 
-	f, err := os.Open(path)
+	f, err := os.Open(xmlPath)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 
 	jiebaXmlConfig = &JiebaXmlConfig{
-		Address : ":6379",
-		DB : 0,
-		DictPath : "",
+		Address:  ":6379",
+		DB:       0,
+		DictPath: "",
 	}
 
 	data := make([]byte, r.Size())

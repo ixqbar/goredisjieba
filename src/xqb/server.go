@@ -155,7 +155,7 @@ func Run() {
 		jieba: make(map[int]*gojieba.Jieba, 0),
 	}
 
-	searcher.Initiation()
+	searcher.Initiation(nil)
 
 	err := searcher.Init(jiebaXmlConfig.DB)
 	if err != nil {

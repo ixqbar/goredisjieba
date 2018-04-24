@@ -93,7 +93,7 @@ OK
 <?php
 
 $redis_handle = new Redis();
-$redis_handle->connect('127.0.0.1', 6479);
+$redis_handle->connect('127.0.0.1', 6379, 10); //端口需要与config.xml配置保持一致
 $redis_handle->select(0);
 
 $result = $redis_handle->rawCommand('cutforsearch', '我来到北京清华大学', 1);

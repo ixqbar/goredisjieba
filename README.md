@@ -18,6 +18,9 @@ make linux
 ./bin/goRedisJieba_linux --config=config.xml
 ```
 
+### download
+* https://github.com/jonnywang/goredisjieba/releases
+
 ### command
 ```
 redis-cli --raw
@@ -52,12 +55,39 @@ redis-cli --raw
 华大
 大学
 清华大学
-127.0.0.1:6379>extract 我来到北京清华大学  20
+127.0.0.1:6379> extract 我来到北京清华大学  20
 清华大学
 来到
 北京
-127.0.0.1:6379>
+127.0.0.1:6479> cutforsearch 天生愚钝所以努力学习块区链技术 0
+天生
+愚钝
+所以
+努力
+力学
+学习
+努力学习
+块
+区
+链
+技术
+127.0.0.1:6479> addword 块区
+OK
+127.0.0.1:6479> cutforsearch 天生愚钝所以努力学习块区链技术 0
+天生
+愚钝
+所以
+努力
+力学
+学习
+努力学习
+块区
+链
+技术
+127.0.0.1:6479>
 ```
+* “区块链”已经存在于字典，为了模拟addword命令动态添加词语， 我们这里使用“块区”
+
 ### php
 ```
 <?php

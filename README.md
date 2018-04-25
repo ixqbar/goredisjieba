@@ -87,6 +87,7 @@ OK
 127.0.0.1:6479>
 ```
 * “区块链”已经存在于字典，为了模拟addword命令动态添加词语， 我们这里使用“块区”
+* 已实现command包含了redis的select,ping,version以及gojieba分词的cutall,cut,cutforsearch,tag,addword
 
 ### php
 ```

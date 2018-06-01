@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	VERSION = "0.0.3"
+	VERSION = "0.0.4"
 	OK      = "OK"
 )
 
@@ -89,15 +89,15 @@ func (obj *SearchRedisHandle) Ping(content string) (string, error)  {
 	return "PONG", nil
 }
 
-func (obj *SearchRedisHandle) Select(client *redis.Client, db int) (string, error) {
+func (obj *SearchRedisHandle) Select(client *redis.Client, db int) error {
 	err := obj.Init(db)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	client.DB = db
 
-	return OK, nil
+	return nil
 }
 
 func (obj *SearchRedisHandle) CutAll(client *redis.Client, words string) ([]string, error) {

@@ -24,3 +24,7 @@ _testmain.go
 github.com
 .idea
 bin
+test
+*.tar.gz
+release
+src/golang.org

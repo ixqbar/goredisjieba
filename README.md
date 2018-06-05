@@ -1,4 +1,4 @@
-### version 0.0.4
+### version 0.0.5
 
 ### config.xml
 ```
@@ -9,7 +9,7 @@
     <dict>/data/dict</dict>
 </config>
 ```
-* 其中db为dict定义目录下的一个子目录，所有字典存在该子目录下,当使用select db时可切换分词字典
+* 其中db为dict定义目录下的一个子目录，所有字典存在该子目录下,当使用select db时可切换分词字典，使用refresh db时可以重新加载分词字典
 
 ### usage
 ```
@@ -39,6 +39,14 @@ redis-cli --raw
 来到
 北京
 清华大学
+127.0.0.1:6379> cutAll 我来到北京清华大学
+我
+来到
+北京
+清华
+清华大学
+华大
+大学
 127.0.0.1:6379> cutforsearch 我来到北京清华大学 1
 我
 来到
@@ -88,6 +96,7 @@ OK
 ```
 * “区块链”已经存在于字典，为了模拟addword命令动态添加词语， 我们这里使用“块区”
 * 已实现command包含了redis的select,ping,version以及gojieba分词的cutall,cut,cutforsearch,tag,addword
+* refresh db 刷新db目录分词字典
 
 ### php
 ```

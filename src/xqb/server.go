@@ -17,13 +17,13 @@ var (
 )
 
 const (
-	VERSION = "0.0.4"
+	VERSION = "0.0.5"
 	OK      = "OK"
 )
 
 type SearchRedisHandle struct {
-	redis.RedisHandler
 	sync.Mutex
+	redis.RedisHandler
 	jieba map[int]*gojieba.Jieba
 }
 
@@ -81,7 +81,7 @@ func (obj *SearchRedisHandle) Version() (string, error) {
 	return VERSION, nil
 }
 
-func (obj *SearchRedisHandle) Ping(content string) (string, error)  {
+func (obj *SearchRedisHandle) Ping(content string) (string, error) {
 	if len(content) > 0 {
 		return content, nil
 	}
@@ -98,6 +98,18 @@ func (obj *SearchRedisHandle) Select(client *redis.Client, db int) error {
 	client.DB = db
 
 	return nil
+}
+
+func (obj *SearchRedisHandle) Refresh(client *redis.Client, db int) error {
+	j, ok := obj.jieba[db]
+	if !ok {
+		return ERRPARAMS
+	}
+
+	j.Free()
+	delete(obj.jieba, db)
+
+	return obj.Init(db)
 }
 
 func (obj *SearchRedisHandle) CutAll(client *redis.Client, words string) ([]string, error) {

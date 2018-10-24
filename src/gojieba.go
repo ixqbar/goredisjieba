@@ -9,6 +9,7 @@ import (
 )
 
 var optionConfigFile= flag.String("config", "./config.xml", "configure xml file")
+var version = flag.Bool("version", false, "print current version")
 
 func usage() {
 	fmt.Printf("Version: %s\nUsage: %s [options]Options:", xqb.VERSION, os.Args[0])
@@ -22,6 +23,11 @@ func main()  {
 
 	if len(os.Args) < 2 {
 		usage()
+	}
+
+	if *version {
+		fmt.Printf("%s\n", xqb.VERSION)
+		os.Exit(0)
 	}
 
 	_, err := xqb.ParseXmlConfig(*optionConfigFile)

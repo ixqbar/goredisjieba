@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	ERRPARAMS = errors.New("error params")
+	ERR_PARAMS = errors.New("error params")
 )
 
 const (
@@ -53,7 +53,7 @@ func (obj *SearchRedisHandle) Init(db int) error {
 	}
 
 	for _, p := range dictPaths {
-		redis.Logger.Print(p)
+		Logger.Print(p)
 		r, e := os.Stat(p)
 		if e != nil || r.Size() == 0 {
 			return errors.New(fmt.Sprintf("not found dict file `%s`", p))
@@ -66,7 +66,7 @@ func (obj *SearchRedisHandle) Init(db int) error {
 }
 
 func (obj *SearchRedisHandle) Shutdown() error {
-	redis.Logger.Print("searcher server will shutdown!!!")
+	Logger.Print("searcher server will shutdown!!!")
 
 	if obj.jieba != nil {
 		for _, j := range obj.jieba {
@@ -103,7 +103,7 @@ func (obj *SearchRedisHandle) Select(client *redis.Client, db int) error {
 func (obj *SearchRedisHandle) Refresh(client *redis.Client, db int) error {
 	j, ok := obj.jieba[db]
 	if !ok {
-		return ERRPARAMS
+		return ERR_PARAMS
 	}
 
 	j.Free()
@@ -114,7 +114,7 @@ func (obj *SearchRedisHandle) Refresh(client *redis.Client, db int) error {
 
 func (obj *SearchRedisHandle) CutAll(client *redis.Client, words string) ([]string, error) {
 	if len(words) == 0 {
-		return nil, ERRPARAMS
+		return nil, ERR_PARAMS
 	}
 
 	return obj.jieba[client.DB].CutAll(words), nil
@@ -122,7 +122,7 @@ func (obj *SearchRedisHandle) CutAll(client *redis.Client, words string) ([]stri
 
 func (obj *SearchRedisHandle) Cut(client *redis.Client, words string, useHmm int) ([]string, error) {
 	if len(words) == 0 {
-		return nil, ERRPARAMS
+		return nil, ERR_PARAMS
 	}
 
 	return obj.jieba[client.DB].Cut(words, toBool(useHmm)), nil
@@ -130,7 +130,7 @@ func (obj *SearchRedisHandle) Cut(client *redis.Client, words string, useHmm int
 
 func (obj *SearchRedisHandle) CutForSearch(client *redis.Client, words string, useHmm int) ([]string, error) {
 	if len(words) == 0 {
-		return nil, ERRPARAMS
+		return nil, ERR_PARAMS
 	}
 
 	return obj.jieba[client.DB].CutForSearch(words, toBool(useHmm)), nil
@@ -138,7 +138,7 @@ func (obj *SearchRedisHandle) CutForSearch(client *redis.Client, words string, u
 
 func (obj *SearchRedisHandle) Tag(client *redis.Client, words string) ([]string, error) {
 	if len(words) == 0 {
-		return nil, ERRPARAMS
+		return nil, ERR_PARAMS
 	}
 
 	return obj.jieba[client.DB].Tag(words), nil
@@ -146,7 +146,7 @@ func (obj *SearchRedisHandle) Tag(client *redis.Client, words string) ([]string,
 
 func (obj *SearchRedisHandle) Extract(client *redis.Client, words string, limit int) ([]string, error) {
 	if len(words) == 0 {
-		return nil, ERRPARAMS
+		return nil, ERR_PARAMS
 	}
 
 	return obj.jieba[client.DB].Extract(words, limit), nil
@@ -154,7 +154,7 @@ func (obj *SearchRedisHandle) Extract(client *redis.Client, words string, limit 
 
 func (obj *SearchRedisHandle) AddWord(client *redis.Client, word string) (string, error) {
 	if len(word) == 0 {
-		return "", ERRPARAMS
+		return "", ERR_PARAMS
 	}
 
 	obj.jieba[client.DB].AddWord(word)
@@ -171,13 +171,13 @@ func Run() {
 
 	err := searcher.Init(jiebaXmlConfig.DB)
 	if err != nil {
-		redis.Logger.Print(err)
+		Logger.Print(err)
 		return
 	}
 
 	server, err := redis.NewServer(jiebaXmlConfig.Address, searcher)
 	if err != nil {
-		redis.Logger.Print(err)
+		Logger.Print(err)
 		return
 	}
 
@@ -189,11 +189,11 @@ func Run() {
 		server.Stop(10)
 	}()
 
-	redis.Logger.Printf("server run at %s", jiebaXmlConfig.Address)
+	Logger.Printf("server run at %s", jiebaXmlConfig.Address)
 
 	err = server.Start()
 	if err != nil {
-		redis.Logger.Print(err)
+		Logger.Print(err)
 	}
 
 	searcher.Shutdown()
